@@ -7,10 +7,10 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run admin:dev\"",
     "server:dev": "cd backend && npm run dev",
     "server:build": "cd backend && npm run build",
-    "admin:dev": "cd admin-frontend && npm run dev",
-    "admin:build": "cd admin-frontend && npm run build",
+    "admin:dev": "cd admin/platform && npm run dev",
+    "admin:build": "cd admin/platform && npm run build",
     "miniapp:dev": "cd attendee-miniapp && npm run dev",
-    "install:all": "npm install && cd backend && npm install && cd ../admin-frontend && npm install && cd ../attendee-miniapp && npm install",
+    "install:all": "npm install && cd backend && npm install && cd ../admin/platform && npm install && cd ../attendee-miniapp && npm install",
     "lint": "eslint . --ext .js,.vue,.ts",
     "test": "jest"
   },

@@ -23,6 +23,5 @@ backend/database/*.db
 backend/database/*.db-journal
 backend/database/*.sqlite
 backend/database/*.sqlite-journal
-admin/platform/dist
 admin/platform/node_modules
 node_modules

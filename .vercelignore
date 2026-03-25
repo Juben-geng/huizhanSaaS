@@ -5,7 +5,7 @@ database
 *.sqlite
 *.sqlite-journal
 backend/database
-admin
+admin/organizer
 h5
 miniprogram
 *.md
@@ -16,3 +16,7 @@ verify-*.js
 check-*.js
 create-*.js
 query
+backend/test-*.js
+backend/verify-*.js
+backend/check-*.js
+backend/create-*.js

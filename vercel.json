@@ -6,7 +6,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/admin/platform/dist/$1"
+      "destination": "/admin/platform/dist/index.html"
     }
   ],
   "env": {
