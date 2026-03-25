@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录成功演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .role-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .role-btn.active {
+      background: #667eea;
+      color: white;
+    }
+    .role-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .info-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .info-value {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      display: none;
+    }
+    #result.success {
+      background: #d4edda;
+      border: 2px solid #28a745;
+    }
+    #result.error {
+      background: #f8d7da;
+      border: 2px solid #dc3545;
+    }
+    .result-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .result-title.success {
+      color: #155724;
+    }
+    .result-title.error {
+      color: #721c24;
+    }
+    .user-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .user-info-item {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .user-info-item:last-child {
+      border-bottom: none;
+    }
+    .user-label {
+      width: 100px;
+      color: #666;
+      font-size: 14px;
+    }
+    .user-value {
+      flex: 1;
+      color: #333;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .token-display {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      word-break: break-all;
+      font-size: 12px;
+      color: #666;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 登录演示</h1>
+    
+    <div class="role-selector">
+      <button class="role-btn active" onclick="selectRole('teacher')" id="teacherBtn">
+        👨‍🏫 教师
+      </button>
+      <button class="role-btn" onclick="selectRole('admin')" id="adminBtn">
+        👨‍💼 管理员
+      </button>
+    </div>
+    
+    <div class="info-box">
+      <div class="info-label">用户名</div>
+      <div class="info-value" id="username">teacher</div>
+    </div>
+    
+    <div class="info-box">
+      <div class="info-label">密码</div>
+      <div class="info-value" id="password">teacher123456</div>
+    </div>
+    
+    <button class="login-btn" onclick="handleLogin()" id="loginBtn">
+      登录
+    </button>
+    
+    <div id="result">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="user-info" id="userInfo"></div>
+      <div class="token-display" id="tokenDisplay"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentRole = 'teacher';
+    const credentials = {
+      teacher: { username: 'teacher', password: 'teacher123456', name: '教师' },
+      admin: { username: 'admin', password: 'admin123456', name: '管理员' }
+    };
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById('teacherBtn').classList.toggle('active', role === 'teacher');
+      document.getElementById('adminBtn').classList.toggle('active', role === 'admin');
+      document.getElementById('username').textContent = credentials[role].username;
+      document.getElementById('password').textContent = credentials[role].password;
+      document.getElementById('result').style.display = 'none';
+    }
+
+    async function handleLogin() {
+      const loginBtn = document.getElementById('loginBtn');
+      const result = document.getElementById('result');
+      
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="loading"></span> 登录中...';
+      result.style.display = 'none';
+
+      try {
+        const response = await fetch('http://localhost:3001/api/platform/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: credentials[currentRole].username,
+            password: credentials[currentRole].password
+          })
+        });
+
+        const data = await response.json();
+        
+        result.style.display = 'block';
+        
+        if (data.code === 200) {
+          result.className = 'success';
+          document.getElementById('resultTitle').innerHTML = 
+            '<span style="font-size: 24px;">✅</span> 登录成功！';
+          
+          document.getElementById('userInfo').innerHTML = `
+            <div class="user-info-item">
+              <span class="user-label">ID:</span>
+              <span class="user-value">${data.data.user.id}</span>
+            </div>
+            <div class="user-info-item">
+              <span class="user-label">用户名:</span>
+              <span class="user-value">${data.data.user.username}</span>
+            </div>
+            <div class="user-info-item">
+              <span class="user-label">姓名:</span>
+              <span class="user-value">${data.data.user.name}</span>
+            </div>
+            <div class="user-info-item">
+              <span class="user-label">角色:</span>
+              <span class="user-value">${data.data.user.role}</span>
+            </div>
+            ${data.data.user.teacherId ? `
+            <div class="user-info-item">
+              <span class="user-label">教师ID:</span>
+              <span class="user-value">${data.data.user.teacherId}</span>
+            </div>
+            ` : ''}
+          `;
+          
+          document.getElementById('tokenDisplay').innerHTML = `
+            <strong>Token:</strong><br>
+            ${data.data.token}
+          `;
+        } else {
+          result.className = 'error';
+          document.getElementById('resultTitle').innerHTML = 
+            '<span style="font-size: 24px;">❌</span> 登录失败';
+          document.getElementById('userInfo').innerHTML = `
+            <div class="user-info-item">
+              <span class="user-label">错误信息:</span>
+              <span class="user-value">${data.msg}</span>
+            </div>
+          `;
+          document.getElementById('tokenDisplay').innerHTML = '';
+        }
+      } catch (error) {
+        result.style.display = 'block';
+        result.className = 'error';
+        document.getElementById('resultTitle').innerHTML = 
+          '<span style="font-size: 24px;">❌</span> 请求失败';
+        document.getElementById('userInfo').innerHTML = `
+          <div class="user-info-item">
+            <span class="user-label">错误:</span>
+            <span class="user-value">${error.message}</span>
+          </div>
+        `;
+        document.getElementById('tokenDisplay').innerHTML = '';
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = '登录';
+      }
+    }
+  </script>
+</body>
+</html>

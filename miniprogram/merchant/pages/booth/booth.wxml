@@ -1,0 +1,158 @@
+<view class="container">
+  <view class="booth-header">
+    <image src="{{boothInfo.coverImage}}" mode="aspectFill" class="booth-cover"></image>
+    <view class="booth-info">
+      <text class="booth-name">{{boothInfo.boothNumber}} - {{boothInfo.boothName}}</text>
+      <text class="booth-location">{{boothInfo.hall}} - {{boothInfo.floor}}</text>
+    </view>
+    <button class="btn btn-primary btn-small edit-btn" bindtap="editBooth">编辑展位</button>
+  </view>
+
+  <view class="booth-detail">
+    <view class="detail-section">
+      <text class="section-title">展位信息</text>
+      <view class="info-row">
+        <text class="info-label">展位号</text>
+        <text class="info-value">{{boothInfo.boothNumber}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">展位名称</text>
+        <text class="info-value">{{boothInfo.boothName}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">展馆</text>
+        <text class="info-value">{{boothInfo.hall}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">楼层</text>
+        <text class="info-value">{{boothInfo.floor}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">面积</text>
+        <text class="info-value">{{boothInfo.area}}m²</text>
+      </view>
+    </view>
+
+    <view class="detail-section">
+      <text class="section-title">展位图片</text>
+      <view class="image-grid">
+        <view class="image-item" wx:for="{{boothInfo.images}}" wx:key="*this" bindtap="previewImage" data-url="{{item}}">
+          <image src="{{item}}" mode="aspectFill" class="booth-image"></image>
+        </view>
+        <view class="image-item add-image" bindtap="uploadBoothImage">
+          <image src="/images/add.png" mode="aspectFit" class="add-icon"></image>
+          <text>添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="detail-section">
+      <text class="section-title">展位描述</text>
+      <textarea 
+        class="description-input" 
+        placeholder="请输入展位描述..." 
+        value="{{boothInfo.description}}"
+        bindinput="onDescriptionChange"
+        maxlength="500"
+      ></textarea>
+      <button class="btn btn-primary btn-small" bindtap="saveDescription">保存描述</button>
+    </view>
+  </view>
+
+  <view class="booth-actions">
+    <button class="action-btn" bindtap="shareBooth">
+      <image src="/images/share.png" mode="aspectFit"></image>
+      <text>分享展位</text>
+    </button>
+    <button class="action-btn" bindtap="goToVirtualRoom">
+      <image src="/images/virtual-room.png" mode="aspectFit"></image>
+      <text>虚拟展位</text>
+    </button>
+    <button class="action-btn" bindtap="viewQRCode">
+      <image src="/images/qr-code.png" mode="aspectFit"></image>
+      <text>展位二维码</text>
+    </button>
+  </view>
+
+  <view class="edit-modal" wx:if="{{showEditModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">编辑展位</text>
+        <view class="close-btn" bindtap="closeEditModal">×</view>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">展位号</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入展位号" 
+            value="{{editForm.boothNumber}}" 
+            bindinput="onBoothNumberChange"
+            maxlength="20"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">展位名称</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入展位名称" 
+            value="{{editForm.boothName}}" 
+            bindinput="onBoothNameChange"
+            maxlength="50"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">展馆</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入展馆" 
+            value="{{editForm.hall}}" 
+            bindinput="onHallChange"
+            maxlength="30"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">楼层</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入楼层" 
+            value="{{editForm.floor}}" 
+            bindinput="onFloorChange"
+            maxlength="10"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">面积</text>
+          <input 
+            class="form-input" 
+            placeholder="请输入面积" 
+            value="{{editForm.area}}" 
+            bindinput="onAreaChange"
+            type="number"
+          />
+        </view>
+      </view>
+      <view class="modal-actions">
+        <button class="btn btn-secondary" bindtap="closeEditModal">取消</button>
+        <button class="btn btn-primary" bindtap="saveBoothInfo">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="qr-modal" wx:if="{{showQRModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">展位二维码</text>
+        <view class="close-btn" bindtap="closeQRModal">×</view>
+      </view>
+      <view class="modal-body">
+        <image src="{{qrCodeUrl}}" mode="aspectFit" class="qr-code"></image>
+        <text class="qr-hint">参会者扫码即可获取展位信息</text>
+      </view>
+      <view class="modal-actions">
+        <button class="btn btn-secondary" bindtap="closeQRModal">关闭</button>
+        <button class="btn btn-primary" bindtap="saveQRCode">保存到相册</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,72 @@
+<view class="container">
+  <view class="chat-header">
+    <view class="merchant-info">
+      <image src="{{merchantInfo.logo}}" mode="aspectFill" class="merchant-logo"></image>
+      <view class="merchant-detail">
+        <text class="merchant-name">{{merchantInfo.merchantName}}</text>
+        <text class="room-name">{{roomInfo.roomName}}</text>
+      </view>
+    </view>
+    <view class="online-status {{online ? 'online' : ''}}">
+      <view class="status-dot"></view>
+      <text>{{online ? '在线' : '离线'}}</text>
+    </view>
+  </view>
+
+  <scroll-view 
+    scroll-y 
+    class="chat-content" 
+    scroll-into-view="{{scrollToView}}" 
+    scroll-with-animation
+  >
+    <view class="chat-item {{item.senderType === 'merchant' ? 'left' : 'right'}}" 
+          wx:for="{{messages}}" 
+          wx:key="messageId"
+          id="msg-{{item.messageId}}">
+      <image src="{{item.senderType === 'merchant' ? merchantInfo.logo : userInfo.avatar}}" 
+             mode="aspectFill" 
+             class="avatar"></image>
+      <view class="message-bubble">
+        <text class="sender-name" wx:if="{{item.senderType === 'merchant'}}">{{merchantInfo.merchantName}}</text>
+        <text class="sender-name" wx:else>我</text>
+        <text class="message-text">{{item.content}}</text>
+        <text class="message-time">{{item.sendTime}}</text>
+      </view>
+    </view>
+
+    <view class="system-message" wx:for="{{systemMessages}}" wx:key="*this">
+      <text>{{item.content}}</text>
+    </view>
+
+    <view class="empty-state" wx:if="{{messages.length === 0 && systemMessages.length === 0}}">
+      <image src="/images/empty-chat.png" mode="aspectFit"></image>
+      <text>开始聊天吧</text>
+    </view>
+  </scroll-view>
+
+  <view class="chat-input-bar">
+    <button class="action-btn" bindtap="handleImageUpload">
+      <image src="/images/image.png" mode="aspectFit"></image>
+    </button>
+    <input 
+      class="chat-input" 
+      placeholder="输入消息..." 
+      value="{{inputText}}" 
+      bindinput="onInputChange"
+      bindconfirm="sendMessage"
+      confirm-type="send"
+    />
+    <button class="send-btn {{inputText ? 'active' : ''}}" bindtap="sendMessage">
+      <text>发送</text>
+    </button>
+  </view>
+
+  <view class="typing-indicator" wx:if="{{typing}}">
+    <view class="typing-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+    <text>对方正在输入...</text>
+  </view>
+</view>

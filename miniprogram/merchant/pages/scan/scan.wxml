@@ -1,0 +1,94 @@
+<view class="container">
+  <view class="scan-header">
+    <text class="scan-title">扫码访客</text>
+    <text class="scan-tip">扫描参会者二维码，建立联系</text>
+  </view>
+
+  <camera 
+    class="scan-camera" 
+    mode="scanCode" 
+    bindscancode="handleScanCode"
+    flash="{{flash}}"
+    frame-size="large"
+  >
+    <cover-view class="scan-frame">
+      <cover-view class="scan-corner top-left"></cover-view>
+      <cover-view class="scan-corner top-right"></cover-view>
+      <cover-view class="scan-corner bottom-left"></cover-view>
+      <cover-view class="scan-corner bottom-right"></cover-view>
+      <cover-view class="scan-line"></cover-view>
+    </cover-view>
+  </camera>
+
+  <view class="scan-actions">
+    <view class="action-btn" bindtap="toggleFlash">
+      <image src="{{flash ? '/images/flash-on.png' : '/images/flash-off.png'}}" mode="aspectFit"></image>
+      <text>{{flash ? '闪光灯开' : '闪光灯关'}}</text>
+    </view>
+    <view class="action-btn" bindtap="switchCamera">
+      <image src="/images/switch-camera.png" mode="aspectFit"></image>
+      <text>切换相机</text>
+    </view>
+    <view class="action-btn" bindtap="scanFromAlbum">
+      <image src="/images/album.png" mode="aspectFit"></image>
+      <text>相册识别</text>
+    </view>
+  </view>
+
+  <view class="my-qr-code">
+    <view class="section-header">
+      <text class="section-title">我的二维码</text>
+    </view>
+    <view class="qr-code-container">
+      <image src="{{qrCodeUrl}}" mode="aspectFit" class="qr-code" wx:if="{{qrCodeUrl}}"></image>
+      <button class="btn btn-primary btn-small" bindtap="generateQRCode" wx:if="{{!qrCodeUrl}}">生成二维码</button>
+    </view>
+    <text class="qr-hint">参会者扫码即可获取您的资料</text>
+  </view>
+
+  <view class="recent-scans">
+    <view class="section-header">
+      <text class="section-title">最近扫码</text>
+      <text class="section-more" bindtap="goToVisitors">查看全部 ></text>
+    </view>
+    <view class="scan-list">
+      <view class="scan-item" wx:for="{{recentScans}}" wx:key="connectionId" bindtap="goToVisitorDetail" data-id="{{item.connectionId}}">
+        <image src="{{item.avatar}}" mode="aspectFill" class="visitor-avatar"></image>
+        <view class="visitor-info">
+          <text class="visitor-name">{{item.nickName}}</text>
+          <text class="visitor-company">{{item.company || '未填写公司'}}</text>
+          <text class="scan-time">{{item.scanTime}}</text>
+        </view>
+        <view class="scan-result">
+          <text class="result-text">已记录</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="scan-result-modal" wx:if="{{showResult}}">
+    <view class="modal-content">
+      <image src="{{resultData.avatar}}" mode="aspectFill" class="result-avatar"></image>
+      <text class="result-title">{{resultData.nickName}}</text>
+      <text class="result-company">{{resultData.company || '未填写公司'}}</text>
+      <view class="result-details">
+        <view class="detail-item">
+          <text class="detail-label">职位</text>
+          <text class="detail-value">{{resultData.position || '未填写'}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">电话</text>
+          <text class="detail-value">{{resultData.phoneNumber || '未填写'}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">行业</text>
+          <text class="detail-value">{{resultData.industry || '未知'}}</text>
+        </view>
+      </view>
+      <view class="result-actions">
+        <button class="btn btn-secondary" bindtap="closeResult">关闭</button>
+        <button class="btn btn-primary" bindtap="sendMessage">发送消息</button>
+      </view>
+    </view>
+  </view>
+</view>

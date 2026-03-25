@@ -1,0 +1,111 @@
+<view class="container">
+  <view class="merchant-header">
+    <image src="{{merchantInfo.logo}}" mode="aspectFill" class="merchant-logo"></image>
+    <view class="merchant-info">
+      <text class="merchant-name">{{merchantInfo.merchantName}}</text>
+      <text class="merchant-industry">{{merchantInfo.industry}}</text>
+    </view>
+  </view>
+
+  <view class="quota-info">
+    <view class="quota-card">
+      <text class="quota-title">本月额度</text>
+      <text class="quota-value">{{quotaInfo.used}}/{{quotaInfo.total}}</text>
+      <view class="quota-progress">
+        <view class="progress-bar" style="width: {{quotaInfo.percentage}}%"></view>
+      </view>
+      <text class="quota-hint">剩余: {{quotaInfo.remaining}}</text>
+    </view>
+  </view>
+
+  <view class="stats-grid">
+    <view class="stat-card">
+      <image src="/images/visitors.png" mode="aspectFit" class="stat-icon"></image>
+      <text class="stat-number">{{stats.todayVisitors}}</text>
+      <text class="stat-label">今日访客</text>
+    </view>
+    <view class="stat-card">
+      <image src="/images/connections.png" mode="aspectFit" class="stat-icon"></image>
+      <text class="stat-number">{{stats.totalVisitors}}</text>
+      <text class="stat-label">总访客数</text>
+    </view>
+    <view class="stat-card">
+      <image src="/images/materials.png" mode="aspectFit" class="stat-icon"></image>
+      <text class="stat-number">{{stats.materialViews}}</text>
+      <text class="stat-label">物料浏览</text>
+    </view>
+    <view class="stat-card">
+      <image src="/images/chat.png" mode="aspectFit" class="stat-icon"></image>
+      <text class="stat-number">{{stats.chatMessages}}</text>
+      <text class="stat-label">消息数</text>
+    </view>
+  </view>
+
+  <view class="chart-section">
+    <view class="section-header">
+      <text class="section-title">访客趋势</text>
+      <view class="chart-tabs">
+        <view class="chart-tab {{chartPeriod === 'day' ? 'active' : ''}}" bindtap="switchChartPeriod" data-period="day">日</view>
+        <view class="chart-tab {{chartPeriod === 'week' ? 'active' : ''}}" bindtap="switchChartPeriod" data-period="week">周</view>
+        <view class="chart-tab {{chartPeriod === 'month' ? 'active' : ''}}" bindtap="switchChartPeriod" data-period="month">月</view>
+      </view>
+    </view>
+    <view class="chart-container">
+      <view class="chart-bars">
+        <view class="chart-bar" wx:for="{{chartData}}" wx:key="label">
+          <view class="bar" style="height: {{item.value}}%; background-color: {{item.color}}"></view>
+          <text class="bar-label">{{item.label}}</text>
+          <text class="bar-value">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="recent-visitors">
+    <view class="section-header">
+      <text class="section-title">最近访客</text>
+      <text class="section-more" bindtap="goToVisitors">查看更多 ></text>
+    </view>
+    <view class="visitor-list">
+      <view class="visitor-item" wx:for="{{recentVisitors}}" wx:key="connectionId" bindtap="goToVisitorDetail" data-id="{{item.connectionId}}">
+        <image src="{{item.avatar}}" mode="aspectFill" class="visitor-avatar"></image>
+        <view class="visitor-info">
+          <text class="visitor-name">{{item.nickName}}</text>
+          <text class="visitor-company">{{item.company || '未填写公司'}}</text>
+          <text class="visitor-time">{{item.scanTime}}</text>
+        </view>
+        <view class="visitor-action">
+          <button class="btn btn-small btn-primary" bindtap="sendMessage" data-user-id="{{item.userId}}" catchtap="stopPropagation">发消息</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="quick-actions">
+    <view class="action-card" bindtap="goToScan">
+      <image src="/images/scan-visitor.png" mode="aspectFit"></image>
+      <text>扫码访客</text>
+    </view>
+    <view class="action-card" bindtap="goToBooth">
+      <image src="/images/my-booth.png" mode="aspectFit"></image>
+      <text>我的展位</text>
+    </view>
+    <view class="action-card" bindtap="goToMaterials">
+      <image src="/images/upload-material.png" mode="aspectFit"></image>
+      <text>上传物料</text>
+    </view>
+    <view class="action-card" bindtap="goToVirtualRoom">
+      <image src="/images/virtual-room.png" mode="aspectFit"></image>
+      <text>虚拟展位</text>
+    </view>
+  </view>
+
+  <view class="live-status" wx:if="{{liveRoom && liveRoom.status === 'live'}}">
+    <view class="live-info">
+      <view class="live-dot"></view>
+      <text class="live-text">直播中</text>
+      <text class="viewer-count">{{liveRoom.visitorCount}}人观看</text>
+    </view>
+    <button class="btn btn-primary btn-small" bindtap="manageLive">管理直播</button>
+  </view>
+</view>

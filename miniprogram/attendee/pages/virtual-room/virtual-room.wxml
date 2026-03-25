@@ -1,0 +1,88 @@
+<view class="container">
+  <view class="room-filters">
+    <view class="filter-tabs">
+      <view class="filter-tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+      <view class="filter-tab {{activeTab === 'live' ? 'active' : ''}}" bindtap="switchTab" data-tab="live">直播中</view>
+      <view class="filter-tab {{activeTab === '3d' ? 'active' : ''}}" bindtap="switchTab" data-tab="3d">3D展厅</view>
+      <view class="filter-tab {{activeTab === 'video' ? 'active' : ''}}" bindtap="switchTab" data-tab="video">视频展位</view>
+    </view>
+    <view class="filter-search">
+      <input placeholder="搜索展商名称或行业" value="{{searchKeyword}}" bindinput="onSearchInput" />
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="room-list">
+    <view class="room-item" wx:for="{{rooms}}" wx:key="roomId" bindtap="enterRoom" data-room-id="{{item.roomId}}">
+      <view class="room-cover">
+        <image src="{{item.roomImages[0]}}" mode="aspectFill" class="cover-image"></image>
+        <view class="room-badge {{item.status}}">{{item.statusText}}</view>
+        <view class="room-type-badge" wx:if="{{item.is3D}}">3D</view>
+      </view>
+      <view class="room-info">
+        <text class="room-name">{{item.roomName}}</text>
+        <text class="merchant-name">{{item.merchant.merchantName}}</text>
+        <text class="merchant-industry">{{item.merchant.industry}}</text>
+        <view class="room-stats">
+          <view class="stat-item">
+            <image src="/images/viewer.png" mode="aspectFit"></image>
+            <text>{{item.visitorCount}}</text>
+          </view>
+          <view class="stat-item" wx:if="{{item.status === 'live'}}">
+            <view class="live-dot"></view>
+            <text>直播中</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{rooms.length === 0}}">
+      <image src="/images/empty-room.png" mode="aspectFit"></image>
+      <text>暂无虚拟展位</text>
+    </view>
+  </scroll-view>
+
+  <view class="room-detail-modal" wx:if="{{showRoomDetail}}">
+    <view class="modal-content">
+      <view class="detail-header">
+        <text class="detail-title">{{currentRoom.roomName}}</text>
+        <view class="close-btn" bindtap="closeDetail">×</view>
+      </view>
+      <scroll-view scroll-y class="detail-body">
+        <view class="room-images">
+          <image src="{{image}}" mode="aspectFill" class="detail-image" wx:for="{{currentRoom.roomImages}}" wx:key="*this" bindtap="previewImage" data-url="{{image}}"></image>
+        </view>
+        <view class="room-description">
+          <text class="section-title">展位介绍</text>
+          <text class="description-text">{{currentRoom.description}}</text>
+        </view>
+        <view class="merchant-detail">
+          <text class="section-title">展商信息</text>
+          <view class="merchant-card">
+            <image src="{{currentRoom.merchant.logo}}" mode="aspectFill" class="merchant-logo"></image>
+            <view class="merchant-info">
+              <text class="merchant-name">{{currentRoom.merchant.merchantName}}</text>
+              <text class="merchant-industry">{{currentRoom.merchant.industry}}</text>
+              <view class="contact-info">
+                <text class="contact-item">{{currentRoom.merchant.contactPerson}}</text>
+                <text class="contact-item">{{currentRoom.merchant.contactPhone}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="live-info" wx:if="{{currentRoom.status === 'live'}}">
+          <text class="section-title">直播信息</text>
+          <video src="{{currentRoom.liveUrl}}" class="live-video" autoplay></video>
+        </view>
+        <view class="opening-hours" wx:if="{{currentRoom.openingHours}}">
+          <text class="section-title">开放时间</text>
+          <text class="hours-text">{{currentRoom.openingHours}}</text>
+        </view>
+      </scroll-view>
+      <view class="detail-actions">
+        <button class="btn btn-secondary" bindtap="closeDetail">关闭</button>
+        <button class="btn btn-primary" bindtap="startChat">开始聊天</button>
+        <button class="btn btn-accent" wx:if="{{currentRoom.status === 'live'}}" bindtap="joinLive">进入直播</button>
+      </view>
+    </view>
+  </view>
+</view>

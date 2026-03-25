@@ -1,0 +1,85 @@
+<view class="container">
+  <view class="header">
+    <text class="title">我的物料</text>
+    <text class="subtitle">已获取的展商资料</text>
+  </view>
+
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view class="filter-tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+      <view class="filter-tab {{activeTab === 'image' ? 'active' : ''}}" bindtap="switchTab" data-tab="image">图片</view>
+      <view class="filter-tab {{activeTab === 'video' ? 'active' : ''}}" bindtap="switchTab" data-tab="video">视频</view>
+      <view class="filter-tab {{activeTab === 'document' ? 'active' : ''}}" bindtap="switchTab" data-tab="document">文档</view>
+    </view>
+    <view class="search-box">
+      <input placeholder="搜索物料名称或展商" value="{{searchKeyword}}" bindinput="onSearchInput" />
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="materials-list">
+    <view class="material-card" wx:for="{{materials}}" wx:key="materialId" bindtap="viewMaterial" data-material="{{item}}">
+      <view class="material-left">
+        <image src="{{item.thumbnailUrl}}" mode="aspectFill" class="material-thumb"></image>
+        <view class="material-info">
+          <text class="material-title">{{item.title}}</text>
+          <text class="material-merchant">{{item.merchantName}}</text>
+          <text class="material-type {{item.materialType}}">{{item.materialTypeText}}</text>
+        </view>
+      </view>
+      <view class="material-right">
+        <text class="material-date">{{item.getDate}}</text>
+        <button class="btn btn-small btn-outline" catchtap="downloadMaterial" data-url="{{item.fileUrl}}" catchtap="stopPropagation">下载</button>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{materials.length === 0}}">
+      <image src="/images/empty-material.png" mode="aspectFit"></image>
+      <text>还没有物料</text>
+      <text class="empty-hint">扫码展商二维码即可获取物料包</text>
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore && materials.length > 0}}" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="material-preview-modal" wx:if="{{showPreview}}">
+    <view class="modal-content">
+      <view class="preview-header">
+        <text class="preview-title">{{currentMaterial.title}}</text>
+        <view class="close-btn" bindtap="closePreview">×</view>
+      </view>
+      <scroll-view scroll-y class="preview-body">
+        <image src="{{currentMaterial.fileUrl}}" mode="widthFix" class="preview-image" wx:if="{{currentMaterial.materialType === 'image'}}"></image>
+        <video src="{{currentMaterial.fileUrl}}" class="preview-video" wx:if="{{currentMaterial.materialType === 'video'}}"></video>
+        <view class="preview-document" wx:if="{{currentMaterial.materialType === 'document'}}">
+          <text class="document-icon">📄</text>
+          <text class="document-name">{{currentMaterial.fileName}}</text>
+        </view>
+        <view class="preview-info">
+          <view class="info-row">
+            <text class="info-label">展商</text>
+            <text class="info-value">{{currentMaterial.merchantName}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">类型</text>
+            <text class="info-value">{{currentMaterial.materialTypeText}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">大小</text>
+            <text class="info-value">{{currentMaterial.fileSize}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">获取时间</text>
+            <text class="info-value">{{currentMaterial.getDate}}</text>
+          </view>
+          <text class="description">{{currentMaterial.description}}</text>
+        </view>
+      </scroll-view>
+      <view class="preview-actions">
+        <button class="btn btn-secondary" bindtap="closePreview">关闭</button>
+        <button class="btn btn-primary" bindtap="downloadCurrentMaterial">下载</button>
+      </view>
+    </view>
+  </view>
+</view>

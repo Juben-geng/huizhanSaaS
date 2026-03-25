@@ -1,0 +1,111 @@
+<view class="container">
+  <view class="chat-header">
+    <view class="chat-user-info">
+      <image src="{{chatUser.avatar}}" mode="aspectFill" class="chat-avatar"></image>
+      <view class="chat-user-details">
+        <text class="chat-user-name">{{chatUser.nickName}}</text>
+        <text class="chat-user-company">{{chatUser.company || ''}}</text>
+      </view>
+    </view>
+    <view class="chat-actions">
+      <button class="btn btn-icon" bindtap="goToUserDetail">
+        <image src="/images/user-info.png" mode="aspectFit"></image>
+      </button>
+    </view>
+  </view>
+
+  <scroll-view 
+    class="chat-content" 
+    scroll-y 
+    scroll-into-view="{{scrollToView}}"
+    scroll-with-animation
+  >
+    <view class="message-list">
+      <view class="message-group" wx:for="{{messageGroups}}" wx:key="date">
+        <text class="group-date">{{item.date}}</text>
+        
+        <view 
+          class="message {{message.senderId === merchantId ? 'message-self' : 'message-other'}}" 
+          wx:for="{{item.messages}}" 
+          wx:for-item="message" 
+          wx:for-index="msgIndex" 
+          wx:key="messageId"
+          id="msg-{{message.messageId}}"
+        >
+          <image 
+            src="{{message.senderId === merchantId ? merchantInfo.logo : chatUser.avatar}}" 
+            mode="aspectFill" 
+            class="message-avatar"
+            wx:if="{{message.senderId !== merchantId}}"
+          ></image>
+          
+          <view class="message-bubble">
+            <view class="message-content" wx:if="{{message.messageType === 'text'}}">
+              <text>{{message.content}}</text>
+            </view>
+            
+            <view class="message-content message-image" wx:if="{{message.messageType === 'image'}}">
+              <image src="{{message.imageUrl}}" mode="aspectFill" bindtap="previewImage" data-url="{{message.imageUrl}}"></image>
+            </view>
+            
+            <view class="message-content message-file" wx:if="{{message.messageType === 'file'}}">
+              <image src="/images/file-icon.png" mode="aspectFit" class="file-icon"></image>
+              <view class="file-info">
+                <text class="file-name">{{message.fileName}}</text>
+                <text class="file-size">{{message.fileSize}}</text>
+              </view>
+            </view>
+            
+            <text class="message-time">{{message.sendTime}}</text>
+          </view>
+
+          <image 
+            src="{{merchantInfo.logo}}" 
+            mode="aspectFill" 
+            class="message-avatar"
+            wx:if="{{message.senderId === merchantId}}"
+          ></image>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="chat-footer">
+    <view class="input-bar">
+      <button class="btn btn-icon" bindtap="chooseImage">
+        <image src="/images/image.png" mode="aspectFit"></image>
+      </button>
+      <button class="btn btn-icon" bindtap="chooseFile">
+        <image src="/images/file.png" mode="aspectFit"></image>
+      </button>
+      
+      <input 
+        class="chat-input" 
+        placeholder="输入消息..." 
+        value="{{inputText}}" 
+        bindinput="onInputChange"
+        confirm-type="send"
+        bindconfirm="sendTextMessage"
+      />
+      
+      <button class="btn btn-icon" bindtap="toggleEmoji" wx:if="{{!inputText}}">
+        <image src="/images/emoji.png" mode="aspectFit"></image>
+      </button>
+      <button class="btn btn-primary btn-small" bindtap="sendTextMessage" wx:else>
+        发送
+      </button>
+    </view>
+
+    <view class="emoji-panel" wx:if="{{showEmoji}}">
+      <view class="emoji-grid">
+        <view 
+          class="emoji-item" 
+          wx:for="{{emojiList}}" 
+          wx:key="*this" 
+          bindtap="selectEmoji" 
+          data-emoji="{{item}}"
+        >{{item}}</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>测试登录</title>
+</head>
+<body>
+  <h1>测试登录</h1>
+  <button onclick="testTeacherLogin()">测试Teacher登录</button>
+  <button onclick="testAdminLogin()">测试Admin登录</button>
+  <div id="result" style="margin-top: 20px; white-space: pre-wrap;"></div>
+
+  <script>
+    async function testTeacherLogin() {
+      const result = document.getElementById('result');
+      result.textContent = '正在测试Teacher登录...\n';
+
+      try {
+        const response = await fetch('http://localhost:3001/api/platform/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: 'teacher',
+            password: 'teacher123456'
+          })
+        });
+
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        result.textContent = '错误: ' + error.message;
+      }
+    }
+
+    async function testAdminLogin() {
+      const result = document.getElementById('result');
+      result.textContent = '正在测试Admin登录...\n';
+
+      try {
+        const response = await fetch('http://localhost:3001/api/platform/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: 'admin',
+            password: 'admin123456'
+          })
+        });
+
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        result.textContent = '错误: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/scan/scan",
+    "pages/connections/connections",
+    "pages/materials/materials",
+    "pages/profile/profile",
+    "pages/virtual-room/virtual-room",
+    "pages/recommend/recommend",
+    "pages/chat/chat"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1890ff",
+    "navigationBarTitleText": "会展智能建联",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1890ff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/scan/scan",
+        "text": "扫码",
+        "iconPath": "images/scan.png",
+        "selectedIconPath": "images/scan-active.png"
+      },
+      {
+        "pagePath": "pages/connections/connections",
+        "text": "建联",
+        "iconPath": "images/connections.png",
+        "selectedIconPath": "images/connections-active.png"
+      },
+      {
+        "pagePath": "pages/virtual-room/virtual-room",
+        "text": "虚拟展位",
+        "iconPath": "images/virtual.png",
+        "selectedIconPath": "images/virtual-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/profile.png",
+        "selectedIconPath": "images/profile-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于记录扫码位置和提供附近展商推荐"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "scanCode"
+  ],
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

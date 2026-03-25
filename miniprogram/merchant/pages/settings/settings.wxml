@@ -1,0 +1,104 @@
+<view class="container">
+  <view class="profile-section">
+    <image src="{{merchantInfo.logo}}" mode="aspectFill" class="merchant-avatar" bindtap="chooseLogo"></image>
+    <view class="merchant-basic">
+      <text class="merchant-name">{{merchantInfo.merchantName}}</text>
+      <text class="merchant-industry">{{merchantInfo.industry}}</text>
+    </view>
+    <button class="btn btn-small btn-secondary" bindtap="editProfile">编辑资料</button>
+  </view>
+
+  <view class="settings-section">
+    <text class="section-title">展位管理</text>
+    <view class="settings-item">
+      <text class="item-label">展位号</text>
+      <text class="item-value">{{boothInfo.boothNumber || '未设置'}}</text>
+    </view>
+    <view class="settings-item">
+      <text class="item-label">展位名称</text>
+      <text class="item-value">{{boothInfo.boothName || '未设置'}}</text>
+    </view>
+    <view class="settings-item">
+      <text class="item-label">展馆</text>
+      <text class="item-value">{{boothInfo.hall || '未设置'}}</text>
+    </view>
+    <button class="btn btn-secondary btn-small setting-btn" bindtap="goToBooth">管理展位</button>
+  </view>
+
+  <view class="settings-section">
+    <text class="section-title">额度管理</text>
+    <view class="quota-card">
+      <view class="quota-header">
+        <text class="quota-title">本月额度</text>
+        <text class="quota-package">{{quotaInfo.packageName}}</text>
+      </view>
+      <text class="quota-value">{{quotaInfo.used}}/{{quotaInfo.total}}</text>
+      <view class="quota-progress">
+        <view class="progress-bar" style="width: {{quotaInfo.percentage}}%"></view>
+      </view>
+      <view class="quota-details">
+        <view class="detail-row">
+          <text class="detail-label">访客记录</text>
+          <text class="detail-value">{{quotaInfo.visitorQuota}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">物料上传</text>
+          <text class="detail-value">{{quotaInfo.materialQuota}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">消息发送</text>
+          <text class="detail-value">{{quotaInfo.messageQuota}}</text>
+        </view>
+      </view>
+      <button class="btn btn-primary btn-small" bindtap="upgradePackage">升级套餐</button>
+    </view>
+  </view>
+
+  <view class="settings-section">
+    <text class="section-title">通知设置</text>
+    <view class="settings-item">
+      <text class="item-label">新访客通知</text>
+      <switch checked="{{notification.newVisitor}}" bindchange="onNotificationChange" data-type="newVisitor" />
+    </view>
+    <view class="settings-item">
+      <text class="item-label">新消息通知</text>
+      <switch checked="{{notification.newMessage}}" bindchange="onNotificationChange" data-type="newMessage" />
+    </view>
+    <view class="settings-item">
+      <text class="item-label">额度预警</text>
+      <switch checked="{{notification.quotaAlert}}" bindchange="onNotificationChange" data-type="quotaAlert" />
+    </view>
+  </view>
+
+  <view class="settings-section">
+    <text class="section-title">其他设置</text>
+    <view class="settings-item" bindtap="goToMaterials">
+      <text class="item-label">物料管理</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+    <view class="settings-item" bindtap="goToVirtualRoom">
+      <text class="item-label">虚拟展位</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+    <view class="settings-item" bindtap="goToLiveRoom">
+      <text class="item-label">直播管理</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+    <view class="settings-item" bindtap="goToStatistics">
+      <text class="item-label">数据统计</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+    <view class="settings-item" bindtap="goToHelp">
+      <text class="item-label">帮助与反馈</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+    <view class="settings-item" bindtap="goToAbout">
+      <text class="item-label">关于我们</text>
+      <image src="/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image>
+    </view>
+  </view>
+
+  <view class="logout-section">
+    <button class="btn btn-danger" bindtap="logout">退出登录</button>
+  </view>
+</view>

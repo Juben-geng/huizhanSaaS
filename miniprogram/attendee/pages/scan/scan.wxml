@@ -1,0 +1,78 @@
+<view class="container">
+  <view class="scan-header">
+    <text class="scan-title">扫码建联</text>
+    <text class="scan-tip">扫描展商二维码，快速建立联系</text>
+  </view>
+
+  <camera 
+    class="scan-camera" 
+    mode="scanCode" 
+    bindscancode="handleScanCode"
+    flash="{{flash}}"
+    frame-size="large"
+  >
+    <cover-view class="scan-frame">
+      <cover-view class="scan-corner top-left"></cover-view>
+      <cover-view class="scan-corner top-right"></cover-view>
+      <cover-view class="scan-corner bottom-left"></cover-view>
+      <cover-view class="scan-corner bottom-right"></cover-view>
+      <cover-view class="scan-line"></cover-view>
+    </cover-view>
+  </camera>
+
+  <view class="scan-actions">
+    <view class="action-btn" bindtap="toggleFlash">
+      <image src="{{flash ? '/images/flash-on.png' : '/images/flash-off.png'}}" mode="aspectFit"></image>
+      <text>{{flash ? '闪光灯开' : '闪光灯关'}}</text>
+    </view>
+    <view class="action-btn" bindtap="switchCamera">
+      <image src="/images/switch-camera.png" mode="aspectFit"></image>
+      <text>切换相机</text>
+    </view>
+    <view class="action-btn" bindtap="scanFromAlbum">
+      <image src="/images/album.png" mode="aspectFit"></image>
+      <text>相册识别</text>
+    </view>
+  </view>
+
+  <view class="recent-scans">
+    <view class="section-header">
+      <text class="section-title">最近扫码</text>
+      <text class="section-more" bindtap="goToConnections">查看全部 ></text>
+    </view>
+    <view class="scan-list">
+      <view class="scan-item" wx:for="{{recentScans}}" wx:key="connectionId" bindtap="goToMerchantDetail" data-id="{{item.merchantId}}">
+        <image src="{{item.logo}}" mode="aspectFill" class="merchant-logo"></image>
+        <view class="merchant-info">
+          <text class="merchant-name">{{item.merchantName}}</text>
+          <text class="merchant-industry">{{item.industry}}</text>
+          <text class="scan-time">{{item.scanTime}}</text>
+        </view>
+        <view class="scan-result">
+          <text class="result-text">建联成功</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="scan-result-modal" wx:if="{{showResult}}">
+    <view class="modal-content">
+      <image src="{{resultData.logo}}" mode="aspectFill" class="result-logo"></image>
+      <text class="result-title">{{resultData.merchantName}}</text>
+      <text class="result-industry">{{resultData.industry}}</text>
+      <view class="result-materials">
+        <text class="materials-title">已获取物料包</text>
+        <view class="material-list">
+          <view class="material-item" wx:for="{{resultData.materials}}" wx:key="materialId">
+            <image src="{{item.thumbnailUrl}}" mode="aspectFill" class="material-thumb"></image>
+            <text class="material-name">{{item.title}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="result-actions">
+        <button class="btn btn-secondary" bindtap="closeResult">关闭</button>
+        <button class="btn btn-primary" bindtap="goToMerchantDetail" data-id="{{resultData.merchantId}}">查看详情</button>
+      </view>
+    </view>
+  </view>
+</view>

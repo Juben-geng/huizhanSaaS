@@ -1,0 +1,123 @@
+<view class="container">
+  <view class="header">
+    <text class="title">智能推荐</text>
+    <text class="subtitle">基于您的偏好为您推荐合适的展商</text>
+  </view>
+
+  <view class="preference-tags">
+    <view class="tag" wx:for="{{preferences}}" wx:key="*this">
+      <text>{{item}}</text>
+    </view>
+    <view class="tag tag-add" bindtap="editPreferences">
+      <text>+ 编辑偏好</text>
+    </view>
+  </view>
+
+  <view class="filter-options">
+    <view class="filter-group">
+      <text class="filter-label">行业</text>
+      <scroll-view scroll-x class="filter-scroll">
+        <view class="filter-item {{selectedIndustry === '' ? 'active' : ''}}" bindtap="selectIndustry" data-industry="">全部</view>
+        <view class="filter-item {{selectedIndustry === item ? 'active' : ''}}" bindtap="selectIndustry" data-industry="{{item}}" wx:for="{{industries}}" wx:key="*this">{{item}}</view>
+      </scroll-view>
+    </view>
+    <view class="filter-group">
+      <text class="filter-label">排序</text>
+      <view class="sort-options">
+        <view class="sort-item {{sortBy === 'score' ? 'active' : ''}}" bindtap="sortRecommendations" data-sort="score">匹配度</view>
+        <view class="sort-item {{sortBy === 'popularity' ? 'active' : ''}}" bindtap="sortRecommendations" data-sort="popularity">热度</view>
+        <view class="sort-item {{sortBy === 'distance' ? 'active' : ''}}" bindtap="sortRecommendations" data-sort="distance">距离</view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="recommend-list">
+    <view class="recommend-card" wx:for="{{recommendations}}" wx:key="recommendationId" bindtap="goToMerchantDetail" data-id="{{item.merchantId}}">
+      <view class="card-header">
+        <image src="{{item.merchant.logo}}" mode="aspectFill" class="merchant-logo"></image>
+        <view class="merchant-info">
+          <text class="merchant-name">{{item.merchant.merchantName}}</text>
+          <text class="merchant-industry">{{item.merchant.industry}}</text>
+        </view>
+        <view class="match-score">
+          <text class="score">{{item.matchScore}}</text>
+          <text class="score-label">匹配度</text>
+        </view>
+      </view>
+      <view class="card-body">
+        <view class="reason-tags">
+          <text class="reason-tag" wx:for="{{item.reasons}}" wx:key="*this">{{item}}</text>
+        </view>
+        <text class="description">{{item.merchant.description}}</text>
+      </view>
+      <view class="card-footer">
+        <view class="stats">
+          <view class="stat">
+            <image src="/images/viewer.png" mode="aspectFit"></image>
+            <text>{{item.materialViewCount}}</text>
+          </view>
+          <view class="stat">
+            <image src="/images/scan.png" mode="aspectFit"></image>
+            <text>{{item.scanCount}}</text>
+          </view>
+          <view class="stat" wx:if="{{item.merchant.hasVirtualRoom}}">
+            <image src="/images/virtual.png" mode="aspectFit"></image>
+            <text>虚拟展位</text>
+          </view>
+        </view>
+        <view class="actions">
+          <button class="btn btn-outline" bindtap="markViewed" data-id="{{item.recommendationId}}" catchtap="stopPropagation">已查看</button>
+          <button class="btn btn-primary" bindtap="goToMerchantDetail" data-id="{{item.merchantId}}" catchtap="stopPropagation">查看详情</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{recommendations.length === 0}}">
+      <image src="/images/empty-recommend.png" mode="aspectFit"></image>
+      <text>暂无推荐内容</text>
+      <text class="empty-hint">完善您的偏好，获取更精准的推荐</text>
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore && recommendations.length > 0}}" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="preference-modal" wx:if="{{showPreferenceModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">编辑偏好</text>
+        <view class="close-btn" bindtap="closePreferenceModal">×</view>
+      </view>
+      <view class="modal-body">
+        <view class="preference-section">
+          <text class="section-title">感兴趣的行业</text>
+          <view class="tag-list">
+            <view 
+              class="tag {{selectedIndustries.includes(item) ? 'active' : ''}}" 
+              wx:for="{{allIndustries}}" 
+              wx:key="*this" 
+              bindtap="toggleIndustry" data-industry="{{item}}"
+            >
+              <text>{{item}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="preference-section">
+          <text class="section-title">备注</text>
+          <textarea 
+            class="remark-input" 
+            placeholder="描述您的需求..." 
+            value="{{preferenceRemark}}"
+            bindinput="onRemarkChange"
+            maxlength="200"
+          ></textarea>
+        </view>
+      </view>
+      <view class="modal-actions">
+        <button class="btn btn-secondary" bindtap="closePreferenceModal">取消</button>
+        <button class="btn btn-primary" bindtap="savePreferences">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

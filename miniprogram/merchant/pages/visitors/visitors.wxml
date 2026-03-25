@@ -1,0 +1,168 @@
+<view class="container">
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <image src="/images/search.png" mode="aspectFit" class="search-icon"></image>
+      <input 
+        class="search-input" 
+        placeholder="搜索访客姓名、公司..." 
+        value="{{searchKeyword}}" 
+        bindinput="onSearchInput"
+      />
+    </view>
+    <view class="filter-btn" bindtap="showFilterModal">
+      <image src="/images/filter.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view class="filter-tags" wx:if="{{activeFilters.length > 0}}">
+    <view class="filter-tag" wx:for="{{activeFilters}}" wx:key="*this" bindtap="removeFilter" data-filter="{{item}}">
+      {{item.label}} ×
+    </view>
+    <view class="clear-filters" bindtap="clearFilters">清除筛选</view>
+  </view>
+
+  <view class="visitor-list">
+    <view class="visitor-card" wx:for="{{visitors}}" wx:key="connectionId" bindtap="goToDetail" data-id="{{item.connectionId}}">
+      <view class="visitor-header">
+        <image src="{{item.avatar}}" mode="aspectFill" class="visitor-avatar"></image>
+        <view class="visitor-basic-info">
+          <text class="visitor-name">{{item.nickName}}</text>
+          <text class="visitor-company">{{item.company || '未填写公司'}}</text>
+        </view>
+        <view class="visitor-favorite" bindtap="toggleFavorite" data-id="{{item.connectionId}}" data-favorited="{{item.favorited}}" catchtap="stopPropagation">
+          <image src="{{item.favorited ? '/images/favorite-active.png' : '/images/favorite.png'}}" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <view class="visitor-details">
+        <view class="detail-item">
+          <image src="/images/position.png" mode="aspectFit"></image>
+          <text>{{item.position || '未填写'}}</text>
+        </view>
+        <view class="detail-item">
+          <image src="/images/industry.png" mode="aspectFit"></image>
+          <text>{{item.industry || '未知'}}</text>
+        </view>
+        <view class="detail-item">
+          <image src="/images/time.png" mode="aspectFit"></image>
+          <text>{{item.scanTime}}</text>
+        </view>
+      </view>
+
+      <view class="visitor-tags">
+        <view class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</view>
+      </view>
+
+      <view class="visitor-actions">
+        <button class="btn btn-small btn-secondary" bindtap="sendMessage" data-user-id="{{item.userId}}" catchtap="stopPropagation">发消息</button>
+        <button class="btn btn-small btn-primary" bindtap="viewMaterials" data-user-id="{{item.userId}}" catchtap="stopPropagation">查看物料</button>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{visitors.length === 0 && !loading}}">
+      <image src="/images/empty-visitors.png" mode="aspectFit" class="empty-image"></image>
+      <text class="empty-text">暂无访客记录</text>
+      <text class="empty-hint">扫码访客后将显示在这里</text>
+    </view>
+
+    <view class="loading-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!hasMore && visitors.length > 0}}">
+      <text>没有更多了</text>
+    </view>
+  </view>
+
+  <view class="filter-modal" wx:if="{{showFilterModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">筛选访客</text>
+        <view class="close-btn" bindtap="closeFilterModal">×</view>
+      </view>
+
+      <view class="filter-section">
+        <text class="filter-section-title">时间范围</text>
+        <view class="filter-options">
+          <view 
+            class="filter-option {{filterParams.timeRange === 'today' ? 'active' : ''}}" 
+            bindtap="selectTimeRange" 
+            data-range="today"
+          >今天</view>
+          <view 
+            class="filter-option {{filterParams.timeRange === 'week' ? 'active' : ''}}" 
+            bindtap="selectTimeRange" 
+            data-range="week"
+          >本周</view>
+          <view 
+            class="filter-option {{filterParams.timeRange === 'month' ? 'active' : ''}}" 
+            bindtap="selectTimeRange" 
+            data-range="month"
+          >本月</view>
+          <view 
+            class="filter-option {{filterParams.timeRange === 'all' ? 'active' : ''}}" 
+            bindtap="selectTimeRange" 
+            data-range="all"
+          >全部</view>
+        </view>
+      </view>
+
+      <view class="filter-section">
+        <text class="filter-section-title">行业</text>
+        <view class="filter-options">
+          <view 
+            class="filter-option {{filterParams.industry === '' ? 'active' : ''}}" 
+            bindtap="selectIndustry" 
+            data-industry=""
+          >全部</view>
+          <view 
+            class="filter-option {{filterParams.industry === '互联网' ? 'active' : ''}}" 
+            bindtap="selectIndustry" 
+            data-industry="互联网"
+          >互联网</view>
+          <view 
+            class="filter-option {{filterParams.industry === '金融' ? 'active' : ''}}" 
+            bindtap="selectIndustry" 
+            data-industry="金融"
+          >金融</view>
+          <view 
+            class="filter-option {{filterParams.industry === '制造业' ? 'active' : ''}}" 
+            bindtap="selectIndustry" 
+            data-industry="制造业"
+          >制造业</view>
+          <view 
+            class="filter-option {{filterParams.industry === '教育' ? 'active' : ''}}" 
+            bindtap="selectIndustry" 
+            data-industry="教育"
+          >教育</view>
+        </view>
+      </view>
+
+      <view class="filter-section">
+        <text class="filter-section-title">是否收藏</text>
+        <view class="filter-options">
+          <view 
+            class="filter-option {{filterParams.favorited === '' ? 'active' : ''}}" 
+            bindtap="selectFavorited" 
+            data-favorited=""
+          >全部</view>
+          <view 
+            class="filter-option {{filterParams.favorited === 'true' ? 'active' : ''}}" 
+            bindtap="selectFavorited" 
+            data-favorited="true"
+          >已收藏</view>
+          <view 
+            class="filter-option {{filterParams.favorited === 'false' ? 'active' : ''}}" 
+            bindtap="selectFavorited" 
+            data-favorited="false"
+          >未收藏</view>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn btn-secondary" bindtap="resetFilters">重置</button>
+        <button class="btn btn-primary" bindtap="applyFilters">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

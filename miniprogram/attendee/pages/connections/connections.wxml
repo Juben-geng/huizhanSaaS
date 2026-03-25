@@ -1,0 +1,129 @@
+<view class="container">
+  <view class="header-stats">
+    <view class="stat-item">
+      <text class="stat-number">{{statistics.totalConnections}}</text>
+      <text class="stat-label">总建联</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{statistics.todayConnections}}</text>
+      <text class="stat-label">今日建联</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-number">{{statistics.scanCount}}</text>
+      <text class="stat-label">扫码次数</text>
+    </view>
+  </view>
+
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view class="filter-tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+      <view class="filter-tab {{activeTab === 'today' ? 'active' : ''}}" bindtap="switchTab" data-tab="today">今天</view>
+      <view class="filter-tab {{activeTab === 'week' ? 'active' : ''}}" bindtap="switchTab" data-tab="week">本周</view>
+      <view class="filter-tab {{activeTab === 'favorite' ? 'active' : ''}}" bindtap="switchTab" data-tab="favorite">收藏</view>
+    </view>
+    <view class="search-box">
+      <input placeholder="搜索展商名称或行业" value="{{searchKeyword}}" bindinput="onSearchInput" />
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="connections-list">
+    <view class="connection-item" wx:for="{{connections}}" wx:key="connectionId" bindtap="goToConnectionDetail" data-id="{{item.connectionId}}">
+      <view class="connection-left">
+        <image src="{{item.logo}}" mode="aspectFill" class="merchant-logo"></image>
+        <view class="merchant-info">
+          <text class="merchant-name">{{item.merchantName}}</text>
+          <text class="merchant-industry">{{item.industry}}</text>
+          <text class="connection-time">{{item.connectTime}}</text>
+        </view>
+      </view>
+      <view class="connection-right">
+        <view class="materials-count">
+          <text class="count">{{item.materialCount}}</text>
+          <text class="label">物料</text>
+        </view>
+        <view class="favorite-btn {{item.isFavorite ? 'active' : ''}}" bindtap="toggleFavorite" data-id="{{item.connectionId}}" data-favorite="{{item.isFavorite}}" catchtap="stopPropagation">
+          <image src="{{item.isFavorite ? '/images/favorite-active.png' : '/images/favorite.png'}}" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{connections.length === 0}}">
+      <image src="/images/empty-connection.png" mode="aspectFit"></image>
+      <text>还没有建联记录</text>
+      <button class="btn btn-primary" bindtap="goToScan">去扫码建联</button>
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore && connections.length > 0}}" bindtap="loadMore">
+      <text>加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="connection-detail-modal" wx:if="{{showDetail}}">
+    <view class="modal-content">
+      <view class="detail-header">
+        <view class="merchant-header">
+          <image src="{{currentConnection.logo}}" mode="aspectFill" class="merchant-logo"></image>
+          <view class="merchant-info">
+            <text class="merchant-name">{{currentConnection.merchantName}}</text>
+            <text class="merchant-industry">{{currentConnection.industry}}</text>
+          </view>
+        </view>
+        <view class="close-btn" bindtap="closeDetail">×</view>
+      </view>
+
+      <scroll-view scroll-y class="detail-body">
+        <view class="section">
+          <text class="section-title">基本信息</text>
+          <view class="info-row">
+            <text class="info-label">联系人</text>
+            <text class="info-value">{{currentConnection.contactPerson}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">联系电话</text>
+            <text class="info-value">{{currentConnection.contactPhone}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">邮箱</text>
+            <text class="info-value">{{currentConnection.email}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">地址</text>
+            <text class="info-value">{{currentConnection.address}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">建联时间</text>
+            <text class="info-value">{{currentConnection.connectTime}}</text>
+          </view>
+        </view>
+
+        <view class="section">
+          <text class="section-title">物料包</text>
+          <view class="materials-grid">
+            <view class="material-item" wx:for="{{currentConnection.materials}}" wx:key="materialId" bindtap="viewMaterial" data-material="{{item}}">
+              <image src="{{item.thumbnailUrl}}" mode="aspectFill" class="material-thumb"></image>
+              <text class="material-name">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="section">
+          <text class="section-title">备注</text>
+          <textarea 
+            class="remark-input" 
+            placeholder="添加备注..." 
+            value="{{currentConnection.remark}}"
+            bindinput="onRemarkChange"
+            maxlength="200"
+          ></textarea>
+          <button class="btn btn-primary btn-small" bindtap="saveRemark">保存备注</button>
+        </view>
+      </scroll-view>
+
+      <view class="detail-actions">
+        <button class="btn btn-secondary" bindtap="closeDetail">关闭</button>
+        <button class="btn btn-primary" bindtap="callContact">拨打电话</button>
+        <button class="btn btn-accent" bindtap="shareMerchant">分享</button>
+      </view>
+    </view>
+  </view>
+</view>

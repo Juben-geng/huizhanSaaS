@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教师登录演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 420px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 24px;
+      color: #303133;
+      margin-bottom: 10px;
+    }
+    .header p {
+      color: #909399;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #606266;
+      font-size: 14px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      font-size: 13px;
+      display: none;
+    }
+    .result.success {
+      background: #f0f9ff;
+      border: 1px solid #67c23a;
+      color: #67c23a;
+    }
+    .result.error {
+      background: #fef0f0;
+      border: 1px solid #f56c6c;
+      color: #f56c6c;
+    }
+    .result pre {
+      margin-top: 10px;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    .tips {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f7fa;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #909399;
+    }
+    .tips h3 {
+      margin-bottom: 10px;
+      color: #606266;
+      font-size: 14px;
+    }
+    .tips p {
+      margin: 5px 0;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 登录演示</h1>
+      <p>会展智能建联SaaS平台</p>
+    </div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="userType">用户类型</label>
+        <select id="userType" style="width:100%;padding:12px;border:1px solid #dcdfe6;border-radius:4px;font-size:14px;">
+          <option value="admin">超级管理员</option>
+          <option value="teacher">教师</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" id="username" value="admin" placeholder="请输入用户名">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" value="admin123456" placeholder="请输入密码">
+      </div>
+      
+      <button type="submit" class="btn" id="loginBtn">登录</button>
+    </form>
+    
+    <div class="result" id="result"></div>
+    
+    <div class="tips">
+      <h3>📋 登录凭证</h3>
+      <p><strong>超级管理员:</strong></p>
+      <p>&nbsp;&nbsp;用户名: admin</p>
+      <p>&nbsp;&nbsp;密码: admin123456</p>
+      <p><strong>教师账户:</strong></p>
+      <p>&nbsp;&nbsp;用户名: teacher</p>
+      <p>&nbsp;&nbsp;密码: teacher123456</p>
+      <p><strong>API:</strong> http://localhost:3001/api/platform/auth/login</p>
+      <p><em style="color:#f56c6c">注意: Teacher账户可能未创建，建议先测试admin登录</em></p>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const resultDiv = document.getElementById('result');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const userTypeSelect = document.getElementById('userType');
+
+    const credentials = {
+      admin: { username: 'admin', password: 'admin123456' },
+      teacher: { username: 'teacher', password: 'teacher123456' }
+    };
+
+    userTypeSelect.addEventListener('change', (e) => {
+      const type = e.target.value;
+      usernameInput.value = credentials[type].username;
+      passwordInput.value = credentials[type].password;
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="loading"></span>登录中...';
+      resultDiv.style.display = 'none';
+      
+      try {
+        const response = await fetch('http://localhost:3001/api/platform/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        resultDiv.style.display = 'block';
+        
+        if (response.ok && data.code === 200) {
+          resultDiv.className = 'result success';
+          resultDiv.innerHTML = `
+            <strong>✅ 登录成功!</strong>
+            <pre>Token: ${data.data.token.substring(0, 50)}...
+用户信息:
+${JSON.stringify(data.data.user, null, 2)}</pre>
+          `;
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.innerHTML = `
+            <strong>❌ 登录失败!</strong>
+            <p>${data.msg || '未知错误'}</p>
+            <pre>状态码: ${response.code || response.status}</pre>
+          `;
+        }
+      } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = `
+          <strong>❌ 请求失败!</strong>
+          <p>${error.message}</p>
+          <p>请确保后端服务器正在运行 (http://localhost:3001)</p>
+        `;
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '登录';
+      }
+    });
+  </script>
+</body>
+</html>
