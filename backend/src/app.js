@@ -133,24 +133,31 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-db.sequelize.sync().then(async () => {
+const startServer = async () => {
   try {
-    const initTeacherAccount = require('./scripts/initTeacher');
-    await initTeacherAccount(db);
-  } catch (error) {
-    logger.warn('Failed to initialize teacher account:', error.message);
-  }
+    await db.sequelize.sync();
+    try {
+      const initTeacherAccount = require('./scripts/initTeacher');
+      await initTeacherAccount(db);
+    } catch (error) {
+      logger.warn('Failed to initialize teacher account:', error.message);
+    }
 
-  httpServer.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-}).catch(err => {
-  logger.warn('Database connection failed, starting server without database:', err.message);
-  httpServer.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT} (database unavailable)`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-});
+    httpServer.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+  } catch (err) {
+    logger.warn('Database connection failed, starting server without database:', err.message);
+    httpServer.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT} (database unavailable)`);
+      logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+  }
+};
+
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = { app, io };
