@@ -2,22 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
 const dotenv = require('dotenv');
 const path = require('path');
 
 dotenv.config();
 
 const app = express();
-const httpServer = createServer(app);
-
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-    methods: ['GET', 'POST']
-  }
-});
+let io = null;
 
 app.use(helmet());
 app.use(cors());
@@ -65,63 +56,6 @@ routes.forEach(route => {
   }
 });
 
-io.on('connection', (socket) => {
-  logger.info(`Client connected: ${socket.id}`);
-  
-  socket.on('join-exhibition', (exhibitionId) => {
-    socket.join(`exhibition-${exhibitionId}`);
-    logger.info(`Client ${socket.id} joined exhibition ${exhibitionId}`);
-  });
-
-  socket.on('join-room', (roomId) => {
-    socket.join(`room-${roomId}`);
-    logger.info(`Client ${socket.id} joined virtual room ${roomId}`);
-  });
-
-  socket.on('leave-room', (roomId) => {
-    socket.leave(`room-${roomId}`);
-    logger.info(`Client ${socket.id} left virtual room ${roomId}`);
-  });
-
-  socket.on('send-message', async (data) => {
-    const { roomId, userId, merchantId, messageType, content, fileUrl } = data;
-    const chatRecordId = require('uuid').v4();
-    const ChatRecord = require('./models').ChatRecord;
-    
-    try {
-      await ChatRecord.create({
-        chatRecordId,
-        roomId,
-        userId,
-        merchantId,
-        messageType,
-        content,
-        fileUrl,
-        senderType: data.senderType || 'user',
-        status: 'sent'
-      });
-
-      io.to(`room-${roomId}`).emit('new-message', {
-        chatRecordId,
-        roomId,
-        userId,
-        merchantId,
-        messageType,
-        content,
-        fileUrl,
-        senderType: data.senderType || 'user',
-        createdAt: new Date()
-      });
-    } catch (error) {
-      logger.error('Error sending message:', error);
-    }
-  });
-
-  socket.on('disconnect', () => {
-    logger.info(`Client disconnected: ${socket.id}`);
-  });
-});
-
 app.use((err, req, res, next) => {
   logger.error('Error:', err);
   res.status(err.status || 500).json({
@@ -143,12 +77,18 @@ const startServer = async () => {
       logger.warn('Failed to initialize teacher account:', error.message);
     }
 
+    const { createServer } = require('http');
+    const httpServer = createServer(app);
+    
     httpServer.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (err) {
     logger.warn('Database connection failed, starting server without database:', err.message);
+    const { createServer } = require('http');
+    const httpServer = createServer(app);
+    
     httpServer.listen(PORT, () => {
       logger.info(`Server running on port ${PORT} (database unavailable)`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -160,4 +100,4 @@ if (require.main === module) {
   startServer();
 }
 
-module.exports = { app, io };
+module.exports = app;
