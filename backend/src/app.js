@@ -96,8 +96,14 @@ const startServer = async () => {
   }
 };
 
-if (require.main === module) {
+if (require.main === module && process.env.VERCEL !== '1') {
   startServer();
+}
+
+if (process.env.VERCEL === '1') {
+  db.sequelize.sync().catch(err => {
+    logger.warn('Database sync failed:', err.message);
+  });
 }
 
 module.exports = app;
