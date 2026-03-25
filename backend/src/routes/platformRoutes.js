@@ -477,6 +477,7 @@ router.get('/dashboard/recent-data', authMiddleware, permissionMiddleware('dashb
       attributes: ['id', 'exhibitionName', 'startTime'],
       include: [{
         model: db.Organizer,
+        as: 'organizer',
         attributes: ['organizerName']
       }]
     });
@@ -492,7 +493,7 @@ router.get('/dashboard/recent-data', authMiddleware, permissionMiddleware('dashb
     const exhibitions = recentExhibitions.map(e => ({
       id: e.id,
       name: e.exhibitionName,
-      organizer: e.Organizer?.organizerName || '',
+      organizer: e.organizer?.organizerName || '',
       startDate: e.startTime
     }));
 
